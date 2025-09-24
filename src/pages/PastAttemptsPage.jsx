@@ -11,7 +11,6 @@ function PastAttemptsPage() {
     const fetchPastAttempts = async () => {
       try {
         const response = await apiClient.get('/attempts/past');
-        // The backend sends the data in a property called 'pastTests'
         setPastAttempts(response.data.data.pastTests);
       } catch (err) {
         setError('Failed to fetch past attempts.');
@@ -30,22 +29,18 @@ function PastAttemptsPage() {
       <h2>My Past Attempts</h2>
       {pastAttempts.length > 0 ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          {pastAttempts.map((attempt) => {
-            // Reconstruct the 'results' object in the exact format
-            // our ResultsPage expects from its 'location.state'.
-            const resultsForDisplay = {
-              score: attempt.score,
-              questions: attempt.test.questions,
-            };
+          {pastAttempts.map((attempt, index) => {
             return (
-              <div key={attempt.test._id} style={{ border: '1px solid #ccc', padding: '1rem', borderRadius: '8px' }}>
-                <h3>{attempt.test.title}</h3>
-                <p><strong>Your Score:</strong> {attempt.score} / {attempt.test.questions.length}</p>
+              <div key={index} style={{ border: '1px solid #ccc', padding: '1rem', borderRadius: '8px' }}>
+                <h3>{attempt.testTitle}</h3>
+                {/* Display the score from the summary object */}
+                <p><strong>Your Score:</strong> {attempt.summary.score} / {attempt.summary.totalMarks}</p>
                 <p><strong>Attempted On:</strong> {new Date(attempt.attemptedAt).toLocaleString()}</p>
-                {/* This Link navigates to the generic /results page but passes the specific 
-                  data for THIS attempt in the 'state' prop.
+                
+                {/* The 'attempt' object from the backend already has the perfect structure,
+                  including the summary, so we pass it directly.
                 */}
-                <Link to="/results" state={{ results: resultsForDisplay }}>
+                <Link to="/results" state={{ results: attempt }}>
                   <button>Review Answers</button>
                 </Link>
               </div>

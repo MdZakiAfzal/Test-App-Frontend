@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 
-// Add a new prop called 'onTimeUp'
 function Timer({ durationInMinutes, startTime, onTimeUp }) {
   if (!durationInMinutes || !startTime) {
     return <div>Loading timer...</div>;
@@ -28,20 +27,22 @@ function Timer({ durationInMinutes, startTime, onTimeUp }) {
     return () => clearInterval(intervalId);
   }, [remainingTime]);
 
-  // This effect now calls the onTimeUp function when time expires
   useEffect(() => {
     if (remainingTime > 0 && remainingTime < 1000) {
-      // Call the function passed from the parent component
-      if (onTimeUp) onTimeUp();
+      if (onTimeUp) {
+        onTimeUp();
+      }
     }
-  }, [remainingTime]);
+  }, [remainingTime, onTimeUp]);
 
+  // Updated formatting logic to include hours
+  const hours = Math.floor(remainingTime / 1000 / 60 / 60);
   const minutes = Math.floor((remainingTime / 1000 / 60) % 60);
   const seconds = Math.floor((remainingTime / 1000) % 60);
 
   return (
     <div style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>
-      Time Left: {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
+      Time Left: {String(hours).padStart(2, '0')}:{String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
     </div>
   );
 }

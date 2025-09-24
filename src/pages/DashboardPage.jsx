@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import apiClient from '../api/axiosConfig';
+import { format } from 'date-fns';
 
 function DashboardPage() {
   const [tests, setTests] = useState([]);
@@ -48,11 +49,9 @@ function DashboardPage() {
               <li key={test._id} style={{ border: '1px solid #ddd', padding: '1rem', marginBottom: '1rem', borderRadius: '5px' }}>
                 <h4>{test.title}</h4>
                 <p>{test.description}</p>
-                {/* --- ADD THESE TWO LINES --- */}
-                <p><strong>Starts at:</strong> {test.startTimeIST}</p>
+                <p><strong>Starts at:</strong> {format(new Date(test.startTime), "E, MMM d 'at' h:mm a")}</p>
                 <p><strong>Duration:</strong> {test.examDuration} minutes</p>
-                {/* ------------------------- */}
-                <Link to={`/test/${test._id}`}>
+                <Link to={`/instructions/${test._id}`}>
                   <button>Start Test</button>
                 </Link>
               </li>
