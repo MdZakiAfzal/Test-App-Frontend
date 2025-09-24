@@ -5,7 +5,8 @@ import ProtectedRoute from './components/ProtectedRoute';
 import DashboardPage from './pages/DashboardPage';
 import LoginPage from './pages/LoginPage';
 import TestPage from './pages/TestPage';
-import PastAttemptsPage from './pages/PastAttemptsPage'; // <-- Import the new page
+import PastAttemptsPage from './pages/PastAttemptsPage'; 
+import ResultsPage from './pages/ResultsPage';
 
 function App() {
   return (
@@ -18,7 +19,8 @@ function App() {
         <Route element={<ProtectedRoute />}>
           <Route path="/" element={<DashboardPage />} />
           <Route path="/test/:testId" element={<TestPage />} />
-          <Route path="/attempts/past" element={<PastAttemptsPage />} /> {/* <-- Add this route */}
+          <Route path="/attempts/past" element={<PastAttemptsPage />} /> 
+          <Route path="/results" element={<ResultsPage />} />
         </Route>
       </Route>
     </Routes>

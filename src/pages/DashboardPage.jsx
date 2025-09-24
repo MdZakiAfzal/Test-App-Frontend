@@ -7,10 +7,9 @@ function DashboardPage() {
   const [tests, setTests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const { user } = useAuth(); // Get the user object
+  const { user } = useAuth();
 
   useEffect(() => {
-    // Only fetch tests if the user is logged in
     if (!user) {
       setLoading(false);
       return;
@@ -29,31 +28,30 @@ function DashboardPage() {
     };
 
     fetchTests();
-  }, [user]); // Re-run the effect if the user object changes
+  }, [user]);
 
-  // Always show a loading message until the fetch is complete
   if (loading) {
     return <p>Loading dashboard...</p>;
   }
 
-  // The main component return
   return (
     <div>
-      {/* Greet the user only if the user object exists */}
       <h2>Welcome, {user?.name || 'Student'}!</h2>
       <h3>Today's Available Tests</h3>
       
-      {/* Show an error message if the API call failed */}
       {error && <p style={{ color: 'red' }}>{error}</p>}
 
-      {/* Display tests or a "no tests" message only if there wasn't an error */}
       {!error && (
         tests.length > 0 ? (
-          <ul>
+          <ul style={{ listStyle: 'none', padding: 0 }}>
             {tests.map((test) => (
-              <li key={test._id}>
+              <li key={test._id} style={{ border: '1px solid #ddd', padding: '1rem', marginBottom: '1rem', borderRadius: '5px' }}>
                 <h4>{test.title}</h4>
                 <p>{test.description}</p>
+                {/* --- ADD THESE TWO LINES --- */}
+                <p><strong>Starts at:</strong> {test.startTimeIST}</p>
+                <p><strong>Duration:</strong> {test.examDuration} minutes</p>
+                {/* ------------------------- */}
                 <Link to={`/test/${test._id}`}>
                   <button>Start Test</button>
                 </Link>
