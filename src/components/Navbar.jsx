@@ -25,19 +25,34 @@ function Navbar() {
     alignItems: 'center',
   };
 
+  const getDashboardLink = () => {
+    if (!user) return '/';
+    switch (user.role) {
+      case 'admin':
+      case 'teacher':
+        return '/teacher/dashboard';
+      case 'student':
+      default:
+        return '/';
+    }
+  };
+
   return (
     <nav style={navStyle}>
       <div style={linkContainerStyle}>
-        <Link to="/">Exam Portal</Link>
+        <Link to={getDashboardLink()}>Exam Portal</Link>
       </div>
       <div style={linkContainerStyle}>
         {user ? (
           <>
             <span style={{ alignSelf: 'center' }}>
-              {user.name || 'User'} ({user.role || 'Role'})
+              {user.name} ({user.role})
             </span>
-            <Link to="/">Dashboard</Link>
-            <Link to="/attempts/past">Past Attempts</Link> {/* <-- Add this link */}
+            <Link to={getDashboardLink()}>Dashboard</Link>
+            {user.role === 'student' && <Link to="/attempts/past">Past Attempts</Link>}
+            {(user.role === 'admin' || user.role === 'teacher') &&(
+              <Link to="/teacher/create-user">Create User</Link>
+            )}
             <button onClick={handleLogout}>Logout</button>
           </>
         ) : (

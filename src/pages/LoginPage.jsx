@@ -32,11 +32,19 @@ function LoginPage() {
       const { token } = response.data;
       const { user } = response.data.data;
 
-      // Use the login function from our AuthContext to update the global state
-      login(user, token);
+      if (token && user) {
+        login(user, token);
 
-      // Redirect the user to the dashboard page after successful login
-      navigate('/');
+        // Check the user's role and navigate accordingly
+        if (user.role === 'admin' || user.role === 'teacher') {
+          navigate('/teacher/dashboard');
+        } else {
+          navigate('/'); // Default to student dashboard
+        }
+
+      } else {
+        setError('Login failed: Invalid response from server.');
+      }
 
     } catch (err) {
       // If the API call fails (e.g., wrong password), we set an error message

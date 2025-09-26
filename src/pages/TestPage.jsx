@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import apiClient from '../api/axiosConfig';
 import Timer from '../components/Timer';
@@ -7,6 +7,9 @@ import QuestionPalette from '../components/QuestionPalette';
 function TestPage() {
   const { testId } = useParams();
   const navigate = useNavigate();
+
+  // Use a ref to track if the effect has already run to prevent duplicate API calls in Strict Mode
+  const effectRan = useRef(false);
 
   const [test, setTest] = useState(null);
   const [attempt, setAttempt] = useState(null);
@@ -18,20 +21,34 @@ function TestPage() {
   const [markedForReview, setMarkedForReview] = useState(new Set());
 
   useEffect(() => {
+    // In React's StrictMode (used in development), this effect runs twice.
+    // This check ensures our API call is only made once.
+    if (effectRan.current === true) {
+      return;
+    }
+
     const initializeTest = async () => {
       try {
         const attemptResponse = await apiClient.post(`/attempts/${testId}/start`);
         setAttempt(attemptResponse.data.data);
+        
         const testResponse = await apiClient.get(`/tests/${testId}`);
         setTest(testResponse.data.data.test);
+        
       } catch (err) {
-        const errorMessage = err.response?.data?.message || 'Failed to start the test.';
+        const errorMessage = err.response?.data?.message || 'Failed to start the test. You may have already started it.';
         setError(errorMessage);
       } finally {
         setLoading(false);
       }
     };
+
     initializeTest();
+
+    // The cleanup function marks that the effect has run once.
+    return () => {
+      effectRan.current = true;
+    };
   }, [testId]);
 
   const goToNextQuestion = () => {
@@ -103,8 +120,7 @@ function TestPage() {
   const currentQuestion = test.questions[currentQuestionIndex];
 
   return (
-    // This outer div uses flexbox to structure the entire page vertically
-    <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 70px)' }}> {/* Adjust height based on Navbar */}
+    <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 70px)' }}>
       <header style={{ padding: '0 1rem' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h2>{test.title}</h2>
@@ -117,9 +133,7 @@ function TestPage() {
         <hr />
       </header>
       
-      {/* This main content area grows to fill all available vertical space */}
       <main style={{ flex: 1, display: 'flex', gap: '20px', padding: '1rem', overflowY: 'auto' }}>
-        {/* Left Column: Question Palette */}
         <div style={{ flex: '0 0 250px' }}>
           <QuestionPalette 
             questions={test.questions}
@@ -131,9 +145,7 @@ function TestPage() {
           />
         </div>
 
-        {/* Right Column: Question and Navigation */}
         <div style={{ flex: '1 1 auto', display: 'flex', flexDirection: 'column' }}>
-          {/* This question area will grow, pushing the footer down */}
           <div style={{ flex: 1, overflowY: 'auto', paddingRight: '1rem' }}>
             <h4>{`Q${currentQuestionIndex + 1}: ${currentQuestion.questionText}`}</h4>
             <div>
@@ -154,7 +166,6 @@ function TestPage() {
             </div>
           </div>
           
-          {/* Navigation buttons are now in a non-scrolling footer section */}
           <footer style={{ paddingTop: '1rem', borderTop: '1px solid #eee', marginTop: 'auto' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <button onClick={goToPreviousQuestion} disabled={currentQuestionIndex === 0}>

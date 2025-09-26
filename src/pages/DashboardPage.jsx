@@ -39,7 +39,7 @@ function DashboardPage() {
     <div>
       <h2>Welcome, {user?.name || 'Student'}!</h2>
       <h3>Today's Available Tests</h3>
-      
+      <hr />
       {error && <p style={{ color: 'red' }}>{error}</p>}
 
       {!error && (
