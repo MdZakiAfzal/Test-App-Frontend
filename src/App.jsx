@@ -13,6 +13,11 @@ import CreateTestPage from './pages/teacher/CreateTestPage';
 import TestResultsPage from './pages/teacher/TestResultsPage';
 import EditTestPage from './pages/teacher/EditTestPage';
 import CreateUserPage from './pages/teacher/CreateUserPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
+import UpdatePasswordPage from './pages/UpdatePasswordPage';
+import SettingsPage from './pages/SettingsPage'; 
+import AccountPage from './pages/AccountPage';
 
 function App() {
   return (
@@ -20,10 +25,15 @@ function App() {
       <Route element={<Layout />}>
         {/* Public Route */}
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
 
         {/* --- Protected STUDENT Routes --- */}
         <Route element={<ProtectedRoute />}>
+          <Route path="/account" element={<AccountPage />} />
+          <Route path="/update-password" element={<UpdatePasswordPage />} />
           <Route path="/" element={<DashboardPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
           <Route path="/instructions/:testId" element={<InstructionsPage />} />
           <Route path="/test/:testId" element={<TestPage />} />
           <Route path="/attempts/past" element={<PastAttemptsPage />} />

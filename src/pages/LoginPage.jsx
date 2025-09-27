@@ -1,88 +1,110 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext'; // To access our login function
-import apiClient from '../api/axiosConfig'; // Our configured axios instance
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import apiClient from '../api/axiosConfig';
+import LoadingSpinner from '../components/LoadingSpinner';
+
+// --- MUI Imports ---
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import Link from '@mui/material/Link';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Container from '@mui/material/Container';
+import InputAdornment from '@mui/material/InputAdornment'; 
+import IconButton from '@mui/material/IconButton';      
+import Visibility from '@mui/icons-material/Visibility';   
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 function LoginPage() {
-  // 1. STATE MANAGEMENT
-  // We use the `useState` hook to keep track of what the user types
-  // into the email and password fields.
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState(''); // To hold any error messages from the API
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false); 
+  const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
+  const { login } = useAuth();
 
-  // 2. HOOKS for NAVIGATION and AUTHENTICATION
-  const navigate = useNavigate(); // A hook from React Router to programmatically navigate
-  const { login } = useAuth(); // Get the login function from our AuthContext
-
-  // 3. FORM SUBMISSION HANDLER
-  // This function runs when the user submits the form.
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevents the default browser form submission (page refresh)
-    setError(''); // Clear any previous errors
+    e.preventDefault();
+    setError('');
+    setIsLoading(true);
 
     try {
-      // Make the API call to your backend's login endpoint
       const response = await apiClient.post('/auth/login', {
         email,
         password,
       });
-
-      // If the login is successful, the backend will send back user data and a token
-      const { token } = response.data;
-      const { user } = response.data.data;
-
-      if (token && user) {
-        login(user, token);
-
-        // Check the user's role and navigate accordingly
-        if (user.role === 'admin' || user.role === 'teacher') {
-          navigate('/teacher/dashboard');
-        } else {
-          navigate('/'); // Default to student dashboard
-        }
-
+      
+      const { token, data: { user } } = response.data;
+      login(user, token);
+      
+      if (user.role === 'admin' || user.role === 'teacher') {
+        navigate('/teacher/dashboard');
       } else {
-        setError('Login failed: Invalid response from server.');
+        navigate('/');
       }
-
     } catch (err) {
-      // If the API call fails (e.g., wrong password), we set an error message
-      const errorMessage = err.response?.data?.message || 'Login failed. Please try again.';
-      setError(errorMessage);
+      setError(err.response?.data?.message || 'Login failed.');
+    } finally {
+      setIsLoading(false); 
     }
   };
 
-  // 4. JSX for the FORM
   return (
-    <div>
-      <h2>Login</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="email">Email:</label>
-          <input
-            type="email"
+    <Container component="main" maxWidth="xs">
+      <Box sx={{ marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <Typography component="h1" variant="h5">
+          Sign in
+        </Typography>
+        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+          <TextField
+            margin="normal"
+            required
+            fullWidth
             id="email"
+            label="Email Address"
+            name="email"
+            autoFocus
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            required
           />
-        </div>
-        <div>
-          <label htmlFor="password">Password:</label>
-          <input
-            type="password"
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            name="password"
+            label="Password"
+            type={showPassword ? 'text' : 'password'} 
             id="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            required
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={() => setShowPassword(!showPassword)}
+                    onMouseDown={(e) => e.preventDefault()} // Prevents focus loss
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
           />
-        </div>
-        {/* Display the error message if it exists */}
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-        <button type="submit">Login</button>
-      </form>
-    </div>
+          {error && <Typography color="error">{error}</Typography>}
+          <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} disabled={isLoading}>
+            {isLoading ? <LoadingSpinner /> : 'Sign In'}
+          </Button>
+          <Box sx={{ textAlign: 'right' }}>
+            <Link component={RouterLink} to="/forgot-password" variant="body2">
+              Forgot password?
+            </Link>
+          </Box>
+        </Box>
+      </Box>
+    </Container>
   );
 }
 

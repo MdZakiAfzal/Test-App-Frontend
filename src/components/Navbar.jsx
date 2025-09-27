@@ -1,14 +1,9 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import ProfileDropdown from './ProfileDropdown'; 
 
 function Navbar() {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
-
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
+  const { user } = useAuth();
 
   const navStyle = {
     backgroundColor: '#f8f9fa',
@@ -36,7 +31,7 @@ function Navbar() {
         return '/';
     }
   };
-
+/*
   return (
     <nav style={navStyle}>
       <div style={linkContainerStyle}>
@@ -53,8 +48,31 @@ function Navbar() {
             {(user.role === 'admin' || user.role === 'teacher') &&(
               <Link to="/teacher/create-user">Create User</Link>
             )}
-            <button onClick={handleLogout}>Logout</button>
+            <Link to="/settings">Settings</Link>
           </>
+        ) : (
+          <Link to="/login">Login</Link>
+        )}
+      </div>
+    </nav>
+  );
+}
+
+export default Navbar;
+*/
+
+  return (
+    <nav style={navStyle}>
+      <div style={linkContainerStyle}>
+        <Link to={getDashboardLink()}>Exam Portal</Link>
+        {user && <Link to={getDashboardLink()}>Dashboard</Link>}
+        {user && user.role === 'student' && <Link to="/attempts/past">Past Attempts</Link>}
+        {user && (user.role === 'admin' || user.role === 'teacher') && <Link to="/teacher/create-user">Create User</Link>}
+        {/* ------------------------------------- */}
+      </div>
+      <div style={linkContainerStyle}>
+        {user ? (
+          <ProfileDropdown user={user} />
         ) : (
           <Link to="/login">Login</Link>
         )}
