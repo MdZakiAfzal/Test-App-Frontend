@@ -24,7 +24,7 @@ function LoginPage() {
       login(user, token);
       
       if (user.role === 'admin' || user.role === 'teacher') {
-        navigate('/teacher/dashboard');
+        navigate('/');
       } else {
         navigate('/');
       }

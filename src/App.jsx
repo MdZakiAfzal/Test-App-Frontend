@@ -8,7 +8,7 @@ import PastAttemptsPage from './pages/PastAttemptsPage';
 import ResultsPage from './pages/ResultsPage';
 import InstructionsPage from './pages/InstructionsPage';
 import RoleBasedRoute from './components/RoleBasedRoute'; 
-import TeacherDashboardPage from './pages/teacher/TeacherDashboardPage';
+import TeacherDashboardPage from './pages/teacher/ManageTestsPage';
 import CreateTestPage from './pages/teacher/CreateTestPage';
 import TestResultsPage from './pages/teacher/TestResultsPage';
 import EditTestPage from './pages/teacher/EditTestPage';
@@ -40,7 +40,7 @@ function App() {
         
         {/* --- Protected TEACHER/ADMIN Routes --- */}
         <Route element={<RoleBasedRoute allowedRoles={['admin', 'teacher']} />}>
-          <Route path="/teacher/dashboard" element={<TeacherDashboardPage />} />
+          <Route path="/teacher/manage-tests" element={<TeacherDashboardPage />} />
           <Route path="/teacher/create-user" element={<CreateUserPage />} /> 
           <Route path="/teacher/create-test" element={<CreateTestPage />} />
           <Route path="/teacher/test/:testId/results" element={<TestResultsPage />} />

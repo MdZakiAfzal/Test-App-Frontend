@@ -7,14 +7,8 @@ function Navbar() {
 
   const getDashboardLink = () => {
     if (!user) return '/';
-    switch (user.role) {
-      case 'admin':
-      case 'teacher':
-        return '/teacher/dashboard';
-      case 'student':
-      default:
-        return '/';
-    }
+    // Now all users go to "/" for the unified dashboard
+    return '/';
   };
 
   return (
@@ -30,12 +24,14 @@ function Navbar() {
           
           {user && (
             <div className="hidden md:flex items-center space-x-4">
+              {/* All users see Dashboard link pointing to "/" */}
               <Link 
-                to={getDashboardLink()} 
+                to="/" 
                 className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200"
               >
                 Dashboard
               </Link>
+              
               {user.role === 'student' && (
                 <Link 
                   to="/attempts/past" 
@@ -44,13 +40,22 @@ function Navbar() {
                   Past Attempts
                 </Link>
               )}
+              
               {(user.role === 'admin' || user.role === 'teacher') && (
-                <Link 
-                  to="/teacher/create-user" 
-                  className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200"
-                >
-                  Create User
-                </Link>
+                <>
+                  <Link 
+                    to="/teacher/manage-tests" 
+                    className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200"
+                  >
+                    Manage Tests
+                  </Link>
+                  <Link 
+                    to="/teacher/create-user" 
+                    className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200"
+                  >
+                    Create User
+                  </Link>
+                </>
               )}
             </div>
           )}

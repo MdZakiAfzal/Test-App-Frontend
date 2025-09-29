@@ -6,6 +6,7 @@ function TestResultsPage() {
   const { testId } = useParams();
   const [results, setResults] = useState([]);
   const [testTitle, setTestTitle] = useState('');
+  const [testDetails, setTestDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -18,6 +19,9 @@ function TestResultsPage() {
         // Fetch test title separately if needed
         const testResponse = await apiClient.get(`/tests/${testId}`);
         setTestTitle(testResponse.data.data.test.title);
+
+        const testResponse2 = await apiClient.get(`/tests/${testId}`);
+        setTestDetails(testResponse2.data.data.test);
       } catch (err) {
         setError('Failed to fetch test results.');
       } finally {
@@ -26,6 +30,8 @@ function TestResultsPage() {
     };
     fetchResults();
   }, [testId]);
+
+  const totalMarks = testDetails ? testDetails.questions.length * 4 : 0;
 
   if (loading) return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -181,7 +187,7 @@ function TestResultsPage() {
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {results.map((result, index) => {
-                  const percentage = ((result.score / result.totalMarks) * 100).toFixed(1);
+                  const percentage = ((result.score / totalMarks) * 100).toFixed(1);
                   const getPerformanceColor = (percentage) => {
                     if (percentage >= 80) return 'text-green-600 bg-green-100';
                     if (percentage >= 60) return 'text-blue-600 bg-blue-100';
@@ -217,7 +223,7 @@ function TestResultsPage() {
                       </td>
                       <td className="py-4 px-6">
                         <span className="text-gray-900 font-medium">
-                          {result.score} / {result.totalMarks}
+                          {result.score} / {totalMarks}
                         </span>
                       </td>
                       <td className="py-4 px-6">
