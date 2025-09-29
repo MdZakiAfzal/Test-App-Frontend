@@ -3,12 +3,15 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import apiClient from '../api/axiosConfig';
 import { format } from 'date-fns';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 function DashboardPage() {
   const [tests, setTests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const { user } = useAuth();
+
+  usePageTitle("Dashboard");
 
   useEffect(() => {
     if (!user) {

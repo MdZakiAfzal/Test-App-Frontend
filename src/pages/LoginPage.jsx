@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import apiClient from '../api/axiosConfig';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 function LoginPage() {
   const [email, setEmail] = useState('');
@@ -12,6 +13,8 @@ function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const { login } = useAuth();
+
+  usePageTitle("Login");
 
   const handleSubmit = async (e) => {
     e.preventDefault();

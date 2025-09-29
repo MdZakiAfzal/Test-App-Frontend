@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import apiClient from '../api/axiosConfig';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
@@ -8,6 +9,8 @@ function ForgotPasswordPage() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [resetSent, setResetSent] = useState(false);
+
+  usePageTitle("Forgot Password");
 
   const handleSubmit = async (e) => {
     e.preventDefault();

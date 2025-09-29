@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import apiClient from '../../api/axiosConfig';
 import { format } from 'date-fns';
 import DeleteConfirmationModal from '../../components/DeleteConfirmationModal';
+import { usePageTitle } from '../../hooks/usePageTitle';
 
 function TeacherDashboardPage() {
   const [tests, setTests] = useState([]);
@@ -11,6 +12,8 @@ function TeacherDashboardPage() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [testToDelete, setTestToDelete] = useState(null);
+
+  usePageTitle("Manage Tests")
 
   useEffect(() => {
     const fetchAllTests = async () => {

@@ -1,8 +1,11 @@
 import { useState } from 'react';
 import apiClient from '../api/axiosConfig';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 function UpdatePasswordPage() {
+  usePageTitle("Update Password");
+
   const [formData, setFormData] = useState({
     currentPassword: '',
     password: '',

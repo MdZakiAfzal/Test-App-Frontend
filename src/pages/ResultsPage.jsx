@@ -1,7 +1,11 @@
 import { useLocation, Navigate, Link } from 'react-router-dom';
 import { useState } from 'react';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 function ResultsPage() {
+
+  usePageTitle("Test Results");
+
   const location = useLocation();
   const results = location.state?.results;
   const [showAnswers, setShowAnswers] = useState(false);

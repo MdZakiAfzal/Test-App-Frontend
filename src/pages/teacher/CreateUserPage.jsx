@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import apiClient from '../../api/axiosConfig';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { usePageTitle } from '../../hooks/usePageTitle';
 
 function CreateUserPage() {
   const navigate = useNavigate();
@@ -19,6 +20,8 @@ function CreateUserPage() {
     password: false,
     confirmPassword: false
   });
+
+  usePageTitle("Create User");
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });

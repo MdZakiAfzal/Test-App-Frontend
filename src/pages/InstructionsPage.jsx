@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import apiClient from '../api/axiosConfig';
 import { format } from 'date-fns';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 function InstructionsPage() {
   const { testId } = useParams();
@@ -9,6 +10,8 @@ function InstructionsPage() {
   const [test, setTest] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+  usePageTitle("Test Instructions");
 
   useEffect(() => {
     const fetchTestDetails = async () => {

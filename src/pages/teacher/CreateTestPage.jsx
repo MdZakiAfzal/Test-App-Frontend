@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import * as XLSX from 'xlsx';
 import Papa from 'papaparse';
 import apiClient from '../../api/axiosConfig';
+import { usePageTitle } from '../../hooks/usePageTitle';
 
 function CreateTestPage() {
   const navigate = useNavigate();
@@ -15,6 +16,8 @@ function CreateTestPage() {
   const [questions, setQuestions] = useState([
     { questionText: '', options: ['', '', '', ''], correctAnswer: 0 },
   ]);
+
+  usePageTitle("Create Test");
 
   const handleFileUpload = (event) => {
     const file = event.target.files[0];

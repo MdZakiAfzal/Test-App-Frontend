@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import apiClient from '../../api/axiosConfig';
+import { usePageTitle } from '../../hooks/usePageTitle';
 
 function TestResultsPage() {
   const { testId } = useParams();
@@ -9,6 +10,8 @@ function TestResultsPage() {
   const [testDetails, setTestDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+  usePageTitle("Test Results");
 
   useEffect(() => {
     const fetchResults = async () => {

@@ -4,6 +4,7 @@ import * as XLSX from 'xlsx';
 import Papa from 'papaparse';
 import { format } from 'date-fns';
 import apiClient from '../../api/axiosConfig';
+import { usePageTitle } from '../../hooks/usePageTitle';
 
 function EditTestPage() {
   const { testId } = useParams();
@@ -16,6 +17,8 @@ function EditTestPage() {
   const [examDuration, setExamDuration] = useState(60);
   const [startTime, setStartTime] = useState('');
   const [questions, setQuestions] = useState([]);
+
+  usePageTitle("Edit Test");
 
   useEffect(() => {
     const fetchTestData = async () => {

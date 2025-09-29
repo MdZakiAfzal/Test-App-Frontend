@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import apiClient from '../api/axiosConfig';
 import Timer from '../components/Timer';
 import QuestionPalette from '../components/QuestionPalette';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 function TestPage() {
   const { testId } = useParams();
@@ -17,6 +18,8 @@ function TestPage() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [visitedQuestions, setVisitedQuestions] = useState(new Set([0]));
   const [markedForReview, setMarkedForReview] = useState(new Set());
+
+  usePageTitle("Test in Progress");
 
   useEffect(() => {
     if (effectRan.current === true) return;

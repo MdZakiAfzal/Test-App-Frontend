@@ -1,9 +1,12 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 function AccountPage() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+
+  usePageTitle("My Account");
 
   if (!user) return null;
 

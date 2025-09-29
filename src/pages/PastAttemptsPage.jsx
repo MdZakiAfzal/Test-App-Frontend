@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import apiClient from '../api/axiosConfig';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 function PastAttemptsPage() {
   const [pastAttempts, setPastAttempts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  
+  usePageTitle("Past Attempts");
 
   useEffect(() => {
     const fetchPastAttempts = async () => {

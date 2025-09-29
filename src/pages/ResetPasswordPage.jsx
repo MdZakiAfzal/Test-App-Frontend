@@ -3,8 +3,12 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import apiClient from '../api/axiosConfig';
 import { useAuth } from '../context/AuthContext';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 function ResetPasswordPage() {
+
+  usePageTitle("Reset Password");
+
   const { token } = useParams();
   const navigate = useNavigate();
   const { login } = useAuth();
