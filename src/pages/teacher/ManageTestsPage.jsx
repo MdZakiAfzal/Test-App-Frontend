@@ -53,6 +53,26 @@ function TeacherDashboardPage() {
     }
   };
 
+  // Helper function to determine test status
+  const getTestStatus = (test) => {
+    const now = new Date();
+    const startTime = new Date(test.startTime);
+    const endTime = new Date(startTime.getTime() + test.examDuration * 60 * 1000);
+
+    if (now < startTime) {
+      return 'upcoming';
+    } else if (now >= startTime && now <= endTime) {
+      return 'active';
+    } else {
+      return 'past';
+    }
+  };
+
+  // Count tests by status
+  const getTestsCountByStatus = (status) => {
+    return tests.filter(test => getTestStatus(test) === status).length;
+  };
+
   if (loading) return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
       <div className="text-center">
@@ -118,7 +138,7 @@ function TeacherDashboardPage() {
             <div>
               <p className="text-sm font-medium text-gray-600">Active Tests</p>
               <p className="text-2xl font-bold text-gray-900">
-                {tests.filter(test => new Date(test.startTime) <= new Date()).length}
+                {getTestsCountByStatus('active')}
               </p>
             </div>
           </div>
@@ -134,7 +154,7 @@ function TeacherDashboardPage() {
             <div>
               <p className="text-sm font-medium text-gray-600">Upcoming Tests</p>
               <p className="text-2xl font-bold text-gray-900">
-                {tests.filter(test => new Date(test.startTime) > new Date()).length}
+                {getTestsCountByStatus('upcoming')}
               </p>
             </div>
           </div>
@@ -142,15 +162,15 @@ function TeacherDashboardPage() {
 
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <div className="flex items-center">
-            <div className="bg-purple-100 rounded-lg p-3 mr-4">
-              <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            <div className="bg-gray-100 rounded-lg p-3 mr-4">
+              <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
             <div>
-              <p className="text-sm font-medium text-gray-600">Total Questions</p>
+              <p className="text-sm font-medium text-gray-600">Past Tests</p>
               <p className="text-2xl font-bold text-gray-900">
-                {tests.reduce((total, test) => total + test.questions.length, 0)}
+                {getTestsCountByStatus('past')}
               </p>
             </div>
           </div>
@@ -161,8 +181,7 @@ function TeacherDashboardPage() {
       {tests.length > 0 ? (
         <div className="space-y-6">
           {tests.map((test) => {
-            const isUpcoming = new Date(test.startTime) > new Date();
-            const isActive = new Date(test.startTime) <= new Date();
+            const status = getTestStatus(test);
             
             return (
               <div key={test._id} className="bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200">
@@ -171,14 +190,19 @@ function TeacherDashboardPage() {
                     <div className="flex-1">
                       <div className="flex items-center mb-2">
                         <h3 className="text-xl font-semibold text-gray-900 mr-3">{test.title}</h3>
-                        {isUpcoming && (
+                        {status === 'upcoming' && (
                           <span className="bg-blue-100 text-blue-600 text-xs font-medium px-2 py-1 rounded-full">
                             Upcoming
                           </span>
                         )}
-                        {isActive && (
+                        {status === 'active' && (
                           <span className="bg-green-100 text-green-600 text-xs font-medium px-2 py-1 rounded-full">
                             Active
+                          </span>
+                        )}
+                        {status === 'past' && (
+                          <span className="bg-gray-100 text-gray-600 text-xs font-medium px-2 py-1 rounded-full">
+                            Past
                           </span>
                         )}
                       </div>

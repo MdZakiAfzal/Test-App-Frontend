@@ -274,7 +274,7 @@ function EditTestPage() {
         <div className="flex space-x-4">
           <button 
             type="button"
-            onClick={() => navigate('/teacher/dashboard')}
+            onClick={() => navigate('/teacher/manage-tests')}
             className="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200"
           >
             Cancel
