@@ -1,24 +1,9 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import ProfileDropdown from './ProfileDropdown'; 
 
 function Navbar() {
   const { user } = useAuth();
-
-  const navStyle = {
-    backgroundColor: '#f8f9fa',
-    padding: '1rem',
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    borderBottom: '1px solid #dee2e6',
-  };
-
-  const linkContainerStyle = {
-    display: 'flex',
-    gap: '1rem',
-    alignItems: 'center',
-  };
 
   const getDashboardLink = () => {
     if (!user) return '/';
@@ -31,51 +16,58 @@ function Navbar() {
         return '/';
     }
   };
-/*
-  return (
-    <nav style={navStyle}>
-      <div style={linkContainerStyle}>
-        <Link to={getDashboardLink()}>Exam Portal</Link>
-      </div>
-      <div style={linkContainerStyle}>
-        {user ? (
-          <>
-            <span style={{ alignSelf: 'center' }}>
-              {user.name} ({user.role})
-            </span>
-            <Link to={getDashboardLink()}>Dashboard</Link>
-            {user.role === 'student' && <Link to="/attempts/past">Past Attempts</Link>}
-            {(user.role === 'admin' || user.role === 'teacher') &&(
-              <Link to="/teacher/create-user">Create User</Link>
-            )}
-            <Link to="/settings">Settings</Link>
-          </>
-        ) : (
-          <Link to="/login">Login</Link>
-        )}
-      </div>
-    </nav>
-  );
-}
-
-export default Navbar;
-*/
 
   return (
-    <nav style={navStyle}>
-      <div style={linkContainerStyle}>
-        <Link to={getDashboardLink()}>Exam Portal</Link>
-        {user && <Link to={getDashboardLink()}>Dashboard</Link>}
-        {user && user.role === 'student' && <Link to="/attempts/past">Past Attempts</Link>}
-        {user && (user.role === 'admin' || user.role === 'teacher') && <Link to="/teacher/create-user">Create User</Link>}
-        {/* ------------------------------------- */}
-      </div>
-      <div style={linkContainerStyle}>
-        {user ? (
-          <ProfileDropdown user={user} />
-        ) : (
-          <Link to="/login">Login</Link>
-        )}
+    <nav className="bg-white shadow-sm border-b border-gray-200 px-4 py-3">
+      <div className="max-w-7xl mx-auto flex justify-between items-center">
+        <div className="flex items-center space-x-6">
+          <Link 
+            to={getDashboardLink()} 
+            className="text-xl font-bold text-blue-600 hover:text-blue-700"
+          >
+            Exam Portal
+          </Link>
+          
+          {user && (
+            <div className="hidden md:flex items-center space-x-4">
+              <Link 
+                to={getDashboardLink()} 
+                className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200"
+              >
+                Dashboard
+              </Link>
+              {user.role === 'student' && (
+                <Link 
+                  to="/attempts/past" 
+                  className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200"
+                >
+                  Past Attempts
+                </Link>
+              )}
+              {(user.role === 'admin' || user.role === 'teacher') && (
+                <Link 
+                  to="/teacher/create-user" 
+                  className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200"
+                >
+                  Create User
+                </Link>
+              )}
+            </div>
+          )}
+        </div>
+
+        <div className="flex items-center space-x-4">
+          {user ? (
+            <ProfileDropdown user={user} />
+          ) : (
+            <Link 
+              to="/login" 
+              className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200"
+            >
+              Login
+            </Link>
+          )}
+        </div>
       </div>
     </nav>
   );

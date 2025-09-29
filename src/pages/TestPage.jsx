@@ -7,8 +7,6 @@ import QuestionPalette from '../components/QuestionPalette';
 function TestPage() {
   const { testId } = useParams();
   const navigate = useNavigate();
-
-  // Use a ref to track if the effect has already run to prevent duplicate API calls in Strict Mode
   const effectRan = useRef(false);
 
   const [test, setTest] = useState(null);
@@ -21,20 +19,14 @@ function TestPage() {
   const [markedForReview, setMarkedForReview] = useState(new Set());
 
   useEffect(() => {
-    // In React's StrictMode (used in development), this effect runs twice.
-    // This check ensures our API call is only made once.
-    if (effectRan.current === true) {
-      return;
-    }
-
+    if (effectRan.current === true) return;
+    
     const initializeTest = async () => {
       try {
         const attemptResponse = await apiClient.post(`/attempts/${testId}/start`);
         setAttempt(attemptResponse.data.data);
-        
         const testResponse = await apiClient.get(`/tests/${testId}`);
         setTest(testResponse.data.data.test);
-        
       } catch (err) {
         const errorMessage = err.response?.data?.message || 'Failed to start the test. You may have already started it.';
         setError(errorMessage);
@@ -44,11 +36,7 @@ function TestPage() {
     };
 
     initializeTest();
-
-    // The cleanup function marks that the effect has run once.
-    return () => {
-      effectRan.current = true;
-    };
+    return () => { effectRan.current = true; };
   }, [testId]);
 
   const goToNextQuestion = () => {
@@ -93,18 +81,18 @@ function TestPage() {
 
   const submitTest = async () => {
     const formattedAnswers = Object.entries(studentAnswers).map(([questionId, selectedOption]) => ({
-        questionId: parseInt(questionId, 10),
-        selectedOption,
+      questionId: parseInt(questionId, 10),
+      selectedOption,
     }));
     try {
-        const response = await apiClient.post(`/attempts/${testId}/submit`, { answers: formattedAnswers });
-        alert('Test submitted successfully!');
-        navigate('/results', { state: { results: response.data.data } });
+      const response = await apiClient.post(`/attempts/${testId}/submit`, { answers: formattedAnswers });
+      alert('Test submitted successfully!');
+      navigate('/results', { state: { results: response.data.data } });
     } catch (err) {
-        if (err.code !== "ERR_CANCELED") {
-            const errorMessage = err.response?.data?.message || 'Failed to submit the test.';
-            setError(errorMessage);
-        }
+      if (err.code !== "ERR_CANCELED") {
+        const errorMessage = err.response?.data?.message || 'Failed to submit the test.';
+        setError(errorMessage);
+      }
     }
   };
 
@@ -113,76 +101,194 @@ function TestPage() {
     submitTest();
   };
   
-  if (loading) return <p>Preparing your test...</p>;
-  if (error) return <p style={{ color: 'red' }}>{error}</p>;
-  if (!test || !attempt) return <p>Test data is not available.</p>;
+  if (loading) return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
+        <p className="text-gray-600 text-lg">Preparing your test...</p>
+      </div>
+    </div>
+  );
+
+  if (error) return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="max-w-md w-full bg-white rounded-xl shadow-sm p-6 text-center">
+        <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <h3 className="text-xl font-semibold text-gray-900 mb-2">Test Error</h3>
+        <p className="text-red-600 mb-4">{error}</p>
+        <button 
+          onClick={() => navigate('/')}
+          className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200"
+        >
+          Back to Dashboard
+        </button>
+      </div>
+    </div>
+  );
+
+  if (!test || !attempt) return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <p className="text-gray-600">Test data is not available.</p>
+    </div>
+  );
 
   const currentQuestion = test.questions[currentQuestionIndex];
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 70px)' }}>
-      <header style={{ padding: '0 1rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h2>{test.title}</h2>
-          <Timer 
-            durationInMinutes={test.examDuration} 
-            startTime={attempt.startedAt} 
-            onTimeUp={submitTest} 
-          />
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      {/* Header */}
+      <header className="bg-white shadow-sm border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center py-4">
+            <div className="flex items-center space-x-4">
+              <h2 className="text-xl font-bold text-gray-900 truncate">{test.title}</h2>
+              <span className="bg-blue-100 text-blue-600 text-sm font-medium px-3 py-1 rounded-full">
+                Question {currentQuestionIndex + 1} of {test.questions.length}
+              </span>
+            </div>
+            <Timer 
+              durationInMinutes={test.examDuration} 
+              startTime={attempt.startedAt} 
+              onTimeUp={submitTest} 
+            />
+          </div>
         </div>
-        <hr />
       </header>
       
-      <main style={{ flex: 1, display: 'flex', gap: '20px', padding: '1rem', overflowY: 'auto' }}>
-        <div style={{ flex: '0 0 250px' }}>
-          <QuestionPalette 
-            questions={test.questions}
-            currentQuestionIndex={currentQuestionIndex}
-            studentAnswers={studentAnswers}
-            visitedQuestions={visitedQuestions}
-            markedForReview={markedForReview}
-            onQuestionSelect={jumpToQuestion}
-          />
+      {/* Main Content - NO SCROLLING HERE */}
+      <div className="flex-1 flex max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 gap-6">
+        {/* Question Palette - SCROLLS INDEPENDENTLY */}
+        <div className="w-80 flex-shrink-0">
+          <div className="h-[calc(100vh-12rem)]"> {/* Fixed height for palette */}
+            <QuestionPalette 
+              questions={test.questions}
+              currentQuestionIndex={currentQuestionIndex}
+              studentAnswers={studentAnswers}
+              visitedQuestions={visitedQuestions}
+              markedForReview={markedForReview}
+              onQuestionSelect={jumpToQuestion}
+            />
+          </div>
         </div>
 
-        <div style={{ flex: '1 1 auto', display: 'flex', flexDirection: 'column' }}>
-          <div style={{ flex: 1, overflowY: 'auto', paddingRight: '1rem' }}>
-            <h4>{`Q${currentQuestionIndex + 1}: ${currentQuestion.questionText}`}</h4>
-            <div>
-              {currentQuestion.options.map((option, optionIndex) => (
-                <div key={optionIndex}>
-                  <label style={{ display: 'block', marginBottom: '0.5rem' }}>
+        {/* Question Area - NO SCROLLING AT ALL */}
+        <div className="flex-1 flex flex-col">
+          {/* Question Card - Fixed height to prevent scrolling */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6 flex-1">
+            <div className="h-full flex flex-col">
+              {/* Question Header */}
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+                  <span className="bg-blue-100 text-blue-600 rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">
+                    {currentQuestionIndex + 1}
+                  </span>
+                  Question {currentQuestionIndex + 1}
+                </h3>
+                {markedForReview.has(currentQuestionIndex) && (
+                  <span className="bg-purple-100 text-purple-600 text-xs font-medium px-2 py-1 rounded-full flex items-center">
+                    <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                    </svg>
+                    Marked for Review
+                  </span>
+                )}
+              </div>
+              
+              {/* Question Text */}
+              <div className="mb-6">
+                <p className="text-gray-700 text-lg leading-relaxed">{currentQuestion.questionText}</p>
+              </div>
+
+              {/* Options - Takes remaining space but doesn't scroll */}
+              <div className="space-y-3 flex-1">
+                {currentQuestion.options.map((option, optionIndex) => (
+                  <label 
+                    key={optionIndex}
+                    className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 ${
+                      studentAnswers[currentQuestionIndex] === optionIndex
+                        ? 'border-blue-500 bg-blue-50 shadow-sm'
+                        : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                    }`}
+                  >
                     <input
                       type="radio"
                       name={`question-${currentQuestionIndex}`}
                       value={optionIndex}
                       checked={studentAnswers[currentQuestionIndex] === optionIndex}
                       onChange={() => handleAnswerChange(currentQuestionIndex, optionIndex)}
+                      className="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300"
                     />
-                    {option}
+                    <span className="ml-4 text-gray-700 flex-1">
+                      <span className="font-medium text-gray-600 mr-2">
+                        {String.fromCharCode(65 + optionIndex)}.
+                      </span>
+                      {option}
+                    </span>
                   </label>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
           
-          <footer style={{ paddingTop: '1rem', borderTop: '1px solid #eee', marginTop: 'auto' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <button onClick={goToPreviousQuestion} disabled={currentQuestionIndex === 0}>
-                Previous
+          {/* Navigation - ALWAYS VISIBLE, NO SCROLLING NEEDED */}
+          <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
+            <div className="flex justify-between items-center">
+              <button 
+                onClick={goToPreviousQuestion} 
+                disabled={currentQuestionIndex === 0}
+                className="flex items-center space-x-2 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed font-medium py-3 px-6 rounded-lg transition-colors duration-200"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+                <span>Previous</span>
               </button>
-              <button onClick={toggleMarkForReview}>
-                {markedForReview.has(currentQuestionIndex) ? 'Unmark Review' : 'Mark for Review'}
-              </button>
-              {currentQuestionIndex === test.questions.length - 1 ? (
-                <button onClick={handleSubmit}>Submit Test</button>
-              ) : (
-                <button onClick={goToNextQuestion}>Next</button>
-              )}
+
+              <div className="flex items-center space-x-3">
+                <button 
+                  onClick={toggleMarkForReview}
+                  className={`flex items-center space-x-2 font-medium py-3 px-6 rounded-lg transition-colors duration-200 ${
+                    markedForReview.has(currentQuestionIndex)
+                      ? 'bg-purple-600 text-white hover:bg-purple-700'
+                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  }`}
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                  </svg>
+                  <span>{markedForReview.has(currentQuestionIndex) ? 'Unmark Review' : 'Mark for Review'}</span>
+                </button>
+
+                {currentQuestionIndex === test.questions.length - 1 ? (
+                  <button 
+                    onClick={handleSubmit}
+                    className="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-8 rounded-lg transition-colors duration-200 flex items-center space-x-2"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span>Submit Test</span>
+                  </button>
+                ) : (
+                  <button 
+                    onClick={goToNextQuestion}
+                    className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-8 rounded-lg transition-colors duration-200 flex items-center space-x-2"
+                  >
+                    <span>Next</span>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                )}
+              </div>
             </div>
-          </footer>
+          </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 }

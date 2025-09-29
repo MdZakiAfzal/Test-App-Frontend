@@ -2,7 +2,11 @@ import { useState, useEffect } from 'react';
 
 function Timer({ durationInMinutes, startTime, onTimeUp }) {
   if (!durationInMinutes || !startTime) {
-    return <div>Loading timer...</div>;
+    return (
+      <div className="flex items-center justify-center py-4">
+        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+      </div>
+    );
   }
 
   const endTime = new Date(new Date(startTime).getTime() + durationInMinutes * 60 * 1000);
@@ -35,14 +39,29 @@ function Timer({ durationInMinutes, startTime, onTimeUp }) {
     }
   }, [remainingTime, onTimeUp]);
 
-  // Updated formatting logic to include hours
   const hours = Math.floor(remainingTime / 1000 / 60 / 60);
   const minutes = Math.floor((remainingTime / 1000 / 60) % 60);
   const seconds = Math.floor((remainingTime / 1000) % 60);
 
+  // Color coding based on remaining time
+  const getTimerColor = () => {
+    const totalSeconds = remainingTime / 1000;
+    const totalMinutes = totalSeconds / 60;
+    
+    if (totalMinutes < 5) return 'text-red-600 bg-red-100 border-red-200';
+    if (totalMinutes < 15) return 'text-orange-600 bg-orange-100 border-orange-200';
+    return 'text-green-600 bg-green-100 border-green-200';
+  };
+
   return (
-    <div style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>
-      Time Left: {String(hours).padStart(2, '0')}:{String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
+    <div className={`flex items-center space-x-2 px-4 py-2 rounded-lg border-2 ${getTimerColor()} font-mono font-bold`}>
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <span>Time Left:</span>
+      <span className="text-lg">
+        {String(hours).padStart(2, '0')}:{String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
+      </span>
     </div>
   );
 }
