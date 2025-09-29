@@ -182,16 +182,16 @@ function TestResultsPage() {
               <tbody className="divide-y divide-gray-200">
                 {results.map((result, index) => {
                   const percentage = ((result.score / result.totalMarks) * 100).toFixed(1);
-                  const getPerformanceColor = (percent) => {
-                    if (percent >= 80) return 'text-green-600 bg-green-100';
-                    if (percent >= 60) return 'text-blue-600 bg-blue-100';
-                    if (percent >= 40) return 'text-orange-600 bg-orange-100';
+                  const getPerformanceColor = (percentage) => {
+                    if (percentage >= 80) return 'text-green-600 bg-green-100';
+                    if (percentage >= 60) return 'text-blue-600 bg-blue-100';
+                    if (percentage >= 40) return 'text-orange-600 bg-orange-100';
                     return 'text-red-600 bg-red-100';
                   };
                   const getPerformanceText = (percent) => {
-                    if (percent >= 80) return 'Excellent';
-                    if (percent >= 60) return 'Good';
-                    if (percent >= 40) return 'Average';
+                    if (percentage >= 80) return 'Excellent';
+                    if (percentage >= 60) return 'Good';
+                    if (percentage >= 40) return 'Average';
                     return 'Needs Improvement';
                   };
 

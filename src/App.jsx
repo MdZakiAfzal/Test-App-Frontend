@@ -16,7 +16,6 @@ import CreateUserPage from './pages/teacher/CreateUserPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import UpdatePasswordPage from './pages/UpdatePasswordPage';
-import SettingsPage from './pages/SettingsPage'; 
 import AccountPage from './pages/AccountPage';
 
 function App() {
@@ -33,7 +32,6 @@ function App() {
           <Route path="/account" element={<AccountPage />} />
           <Route path="/update-password" element={<UpdatePasswordPage />} />
           <Route path="/" element={<DashboardPage />} />
-          <Route path="/settings" element={<SettingsPage />} />
           <Route path="/instructions/:testId" element={<InstructionsPage />} />
           <Route path="/test/:testId" element={<TestPage />} />
           <Route path="/attempts/past" element={<PastAttemptsPage />} />
