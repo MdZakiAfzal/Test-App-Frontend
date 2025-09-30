@@ -64,7 +64,7 @@ function TestResultsPage() {
           </p>
         </div>
         <Link 
-          to="/teacher/dashboard" 
+          to="/teacher/manage-tests" 
           className="mt-4 lg:mt-0 inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200"
         >
           <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
