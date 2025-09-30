@@ -57,8 +57,9 @@ function TeacherDashboardPage() {
   const getTestStatus = (test) => {
     const now = new Date();
     const startTime = new Date(test.startTime);
-    const endTime = new Date(startTime.getTime() + test.examDuration * 60 * 1000);
-
+    const endTime = new Date(startTime);
+    endTime.setHours(23, 59, 59, 999);
+    
     if (now < startTime) {
       return 'upcoming';
     } else if (now >= startTime && now <= endTime) {

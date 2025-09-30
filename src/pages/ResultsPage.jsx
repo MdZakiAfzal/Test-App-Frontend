@@ -59,9 +59,9 @@ function ResultsPage() {
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">{results.testTitle}</h3>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">{results.title}</h3>
             <p className="text-gray-600">
-              Attempted on: {new Date(results.attemptedAt).toLocaleString()}
+              Attempted on: {new Date(results.submittedAt).toLocaleString()}
             </p>
           </div>
           <div className="mt-4 lg:mt-0 text-center">
