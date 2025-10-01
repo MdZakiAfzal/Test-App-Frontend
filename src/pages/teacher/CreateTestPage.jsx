@@ -101,7 +101,7 @@ function CreateTestPage() {
     try {
       await apiClient.post('/tests', testData);
       alert('Test created successfully!');
-      navigate('/teacher/dashboard');
+      navigate('/teacher/manage-tests');
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to create test.');
     }

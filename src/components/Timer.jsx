@@ -3,8 +3,8 @@ import { useState, useEffect } from 'react';
 function Timer({ durationInMinutes, startTime, onTimeUp }) {
   if (!durationInMinutes || !startTime) {
     return (
-      <div className="flex items-center justify-center py-4">
-        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+      <div className="flex items-center justify-center py-2">
+        <div className="animate-spin rounded-full h-5 w-5 sm:h-6 sm:w-6 border-b-2 border-blue-600"></div>
       </div>
     );
   }
@@ -54,12 +54,12 @@ function Timer({ durationInMinutes, startTime, onTimeUp }) {
   };
 
   return (
-    <div className={`flex items-center space-x-2 px-4 py-2 rounded-lg border-2 ${getTimerColor()} font-mono font-bold`}>
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div className={`flex items-center space-x-2 px-3 py-1 sm:px-4 sm:py-2 rounded-lg border-2 ${getTimerColor()} font-mono font-bold text-sm sm:text-base`}>
+      <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
       </svg>
-      <span>Time Left:</span>
-      <span className="text-lg">
+      <span className="hidden sm:inline-block text-xs">Time Left:</span>
+      <span className="text-base sm:text-lg tabular-nums">
         {String(hours).padStart(2, '0')}:{String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
       </span>
     </div>
