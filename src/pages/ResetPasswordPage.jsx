@@ -61,7 +61,7 @@ function ResetPasswordPage() {
 
       setTimeout(() => {
         if (user.role === 'admin' || user.role === 'teacher') {
-          navigate('/teacher/dashboard');
+          navigate('/');
         } else {
           navigate('/');
         }

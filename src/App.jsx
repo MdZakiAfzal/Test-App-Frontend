@@ -1,4 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useAuth } from './context/AuthContext';
 
 // Component Imports
 import Layout from './components/Layout';
@@ -23,6 +25,22 @@ import TestResultsPage from './pages/teacher/TestResultsPage';
 import CreateUserPage from './pages/teacher/CreateUserPage';
 
 function App() {
+  const { logoutBeacon, token } = useAuth();
+
+  useEffect(() => {
+    // use 'unload' (fires on tab close / navigate away). sendBeacon is fire-and-forget.
+    if (!token) return;
+    const handleUnload = () => {
+      try {
+        logoutBeacon();
+      } catch (err) {
+        // ignore
+      }
+    };
+
+    window.addEventListener('unload', handleUnload);
+    return () => window.removeEventListener('unload', handleUnload);
+  }, [logoutBeacon, token ]);
   return (
     <Routes>
       <Route path="/" element={<Layout />}>

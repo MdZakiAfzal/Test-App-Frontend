@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import ProfileDropdown from './ProfileDropdown';
 
 function Navbar() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
 
   const getDashboardLink = () => {
@@ -13,6 +13,12 @@ function Navbar() {
   };
 
   const closeMenu = () => setMenuOpen(false);
+
+  // helper for mobile logout: close menu then logout
+  const handleMobileLogout = () => {
+    closeMenu();
+    logout();
+  };
 
   return (
     <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm shadow-sm border-b border-gray-200 px-4 py-3">
@@ -93,7 +99,8 @@ function Navbar() {
         {/* Right: Profile (desktop & mobile) */}
         <div className="flex items-center space-x-4">
           {user ? (
-            <div className="flex items-center">
+            <div className="flex items-center space-x-3">
+              {/* Profile dropdown */}
               <ProfileDropdown user={user} />
             </div>
           ) : (
@@ -151,6 +158,14 @@ function Navbar() {
                   </Link>
                 </>
               )}
+
+              {/* Mobile Logout item */}
+              <button
+                onClick={handleMobileLogout}
+                className="w-full text-left block bg-red-50 hover:bg-red-100 text-red-700 font-medium py-2 px-3 rounded-md transition-colors duration-150"
+              >
+                Logout
+              </button>
             </>
           ) : (
             /* If not logged in, show Login inside the mobile menu */

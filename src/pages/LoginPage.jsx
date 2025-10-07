@@ -23,14 +23,13 @@ function LoginPage() {
 
     try {
       const response = await apiClient.post('/auth/login', { email, password });
-      const { token, data: { user } } = response.data;
-      login(user, token);
-      
-      if (user.role === 'admin' || user.role === 'teacher') {
-        navigate('/');
-      } else {
-        navigate('/');
-      }
+      // response.data: { status, token, data: { user } }
+      const { token: receivedToken, data: { user: receivedUser } } = response.data;
+      // this updates sessionStorage via AuthContext
+      login(receivedUser, receivedToken);
+
+      // redirect after login
+      navigate('/');
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed.');
     } finally {
