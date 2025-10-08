@@ -53,19 +53,11 @@ function ResetPasswordPage() {
         confirmPassword: formData.confirmPassword,
       });
 
-      setSuccess('Password has been reset successfully! Logging you in...');
+      setSuccess('Password has been reset successfully! Please login with your new password.');
       
-      const { token: newToken, data: { user } } = response.data;
-      
-      login(user, newToken);
-
       setTimeout(() => {
-        if (user.role === 'admin' || user.role === 'teacher') {
-          navigate('/');
-        } else {
-          navigate('/');
-        }
-      }, 2000);
+        navigate('/login'); // Redirect to login page after success
+      }, 3000);
 
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to reset password. The token may be invalid or expired.');

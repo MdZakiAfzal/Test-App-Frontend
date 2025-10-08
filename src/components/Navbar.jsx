@@ -158,14 +158,6 @@ function Navbar() {
                   </Link>
                 </>
               )}
-
-              {/* Mobile Logout item */}
-              <button
-                onClick={handleMobileLogout}
-                className="w-full text-left block bg-red-50 hover:bg-red-100 text-red-700 font-medium py-2 px-3 rounded-md transition-colors duration-150"
-              >
-                Logout
-              </button>
             </>
           ) : (
             /* If not logged in, show Login inside the mobile menu */
