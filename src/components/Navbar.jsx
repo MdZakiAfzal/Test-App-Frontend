@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import ProfileDropdown from './ProfileDropdown';
 
 function Navbar() {
   const { user, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
+  const location = useLocation();
 
   const getDashboardLink = () => {
     if (!user) return '/';
@@ -13,6 +14,25 @@ function Navbar() {
   };
 
   const closeMenu = () => setMenuOpen(false);
+
+  // Helper to check if a link is active
+  const isActiveLink = (path, exact = false) => {
+    if (exact) {
+      return location.pathname === path;
+    }
+    return location.pathname.startsWith(path);
+  };
+
+  // Helper function to get text classes based on active state
+  const getTextClasses = (path, exact = false) => {
+    const baseClasses = "font-medium transition-all duration-200 relative";
+    const activeClasses = "text-gray-900 font-semibold";
+    const inactiveClasses = "text-gray-600 hover:text-gray-900";
+    
+    const isActive = isActiveLink(path, exact);
+    
+    return `${baseClasses} ${isActive ? activeClasses : inactiveClasses}`;
+  };
 
   // helper for mobile logout: close menu then logout
   const handleMobileLogout = () => {
@@ -59,20 +79,26 @@ function Navbar() {
 
           {/* Desktop links */}
           {user && (
-            <div className="hidden md:flex items-center space-x-4">
+            <div className="hidden md:flex items-center space-x-8">
               <Link
                 to="/"
-                className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200"
+                className={getTextClasses('/', true)}
               >
                 Dashboard
+                {isActiveLink('/', true) && (
+                  <span className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600 transform translate-y-3"></span>
+                )}
               </Link>
 
               {user.role === 'student' && (
                 <Link
                   to="/attempts/past"
-                  className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200"
+                  className={getTextClasses('/attempts')}
                 >
                   Past Attempts
+                  {isActiveLink('/attempts') && (
+                    <span className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600 transform translate-y-3"></span>
+                  )}
                 </Link>
               )}
 
@@ -80,15 +106,21 @@ function Navbar() {
                 <>
                   <Link
                     to="/teacher/manage-tests"
-                    className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200"
+                    className={getTextClasses('/teacher/manage-tests')}
                   >
                     Manage Tests
+                    {isActiveLink('/teacher/manage-tests') && (
+                      <span className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600 transform translate-y-3"></span>
+                    )}
                   </Link>
                   <Link
                     to="/teacher/create-user"
-                    className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200"
+                    className={getTextClasses('/teacher/create-user')}
                   >
                     Create User
+                    {isActiveLink('/teacher/create-user') && (
+                      <span className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600 transform translate-y-3"></span>
+                    )}
                   </Link>
                 </>
               )}
@@ -118,25 +150,31 @@ function Navbar() {
 
       {/* Mobile Menu (push-down) */}
       <div className={`md:hidden mt-2 px-4 ${menuOpen ? 'block' : 'hidden'}`}>
-        <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-3 space-y-2">
+        <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-4 space-y-3">
           {/* If user is logged in, show their links */}
           {user ? (
             <>
               <Link
                 to="/"
                 onClick={closeMenu}
-                className="block text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200"
+                className={`block py-2 pl-3 relative ${getTextClasses('/', true)}`}
               >
                 Dashboard
+                {isActiveLink('/', true) && (
+                  <span className="absolute left-0 top-1/2 w-1 h-6 bg-blue-600 transform -translate-y-1/2"></span>
+                )}
               </Link>
 
               {user.role === 'student' && (
                 <Link
                   to="/attempts/past"
                   onClick={closeMenu}
-                  className="block text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200"
+                  className={`block py-2 pl-3 relative ${getTextClasses('/attempts')}`}
                 >
                   Past Attempts
+                  {isActiveLink('/attempts') && (
+                    <span className="absolute left-0 top-1/2 w-1 h-6 bg-blue-600 transform -translate-y-1/2"></span>
+                  )}
                 </Link>
               )}
 
@@ -145,16 +183,22 @@ function Navbar() {
                   <Link
                     to="/teacher/manage-tests"
                     onClick={closeMenu}
-                    className="block text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200"
+                    className={`block py-2 pl-3 relative ${getTextClasses('/teacher/manage-tests')}`}
                   >
                     Manage Tests
+                    {isActiveLink('/teacher/manage-tests') && (
+                      <span className="absolute left-0 top-1/2 w-1 h-6 bg-blue-600 transform -translate-y-1/2"></span>
+                    )}
                   </Link>
                   <Link
                     to="/teacher/create-user"
                     onClick={closeMenu}
-                    className="block text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200"
+                    className={`block py-2 pl-3 relative ${getTextClasses('/teacher/create-user')}`}
                   >
                     Create User
+                    {isActiveLink('/teacher/create-user') && (
+                      <span className="absolute left-0 top-1/2 w-1 h-6 bg-blue-600 transform -translate-y-1/2"></span>
+                    )}
                   </Link>
                 </>
               )}
@@ -164,7 +208,7 @@ function Navbar() {
             <Link
               to="/login"
               onClick={closeMenu}
-              className="block bg-blue-600 hover:bg-blue-700 text-white text-center font-medium py-2 px-4 rounded-lg transition-colors duration-200"
+              className="block bg-blue-600 hover:bg-blue-700 text-white text-center font-medium py-3 px-4 rounded-lg transition-colors duration-200"
             >
               Login
             </Link>
