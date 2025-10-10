@@ -23,6 +23,19 @@ function TestPage() {
 
   useEffect(() => {
     if (effectRan.current === true) return;
+
+    try {
+      const justFinished = JSON.parse(sessionStorage.getItem('justFinishedAttempt') || 'null');
+      if (justFinished && justFinished.testId === testId) {
+        // clean up the flag so it won't interfere later
+        sessionStorage.removeItem('justFinishedAttempt');
+        // send them to dashboard instead of re-starting this test
+        navigate('/', { replace: true });
+        return;
+      }
+    } catch (e) {
+      // ignore parse errors and continue normally
+    }
     
     const initializeTest = async () => {
       try {
@@ -89,8 +102,14 @@ function TestPage() {
     }));
     try {
       const response = await apiClient.post(`/attempts/${testId}/submit`, { answers: formattedAnswers });
+      sessionStorage.setItem('justFinishedAttempt', JSON.stringify({
+        testId,
+        attemptId: response.data.data.attemptId || attempt?.id || response.data.data.id || null,
+        ts: Date.now()
+      }));
       alert('Test submitted successfully!');
-      navigate('/results', { state: { results: response.data.data } });
+      navigate('/', { replace: true });
+      navigate('/results', { state: { results: response.data.data, fromTest: true } });
     } catch (err) {
       if (err.code !== "ERR_CANCELED") {
         const errorMessage = err.response?.data?.message || 'Failed to submit the test.';

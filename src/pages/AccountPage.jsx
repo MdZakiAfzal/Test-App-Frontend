@@ -50,7 +50,7 @@ function AccountPage() {
         <div className="space-y-4">
           {(user.role === 'admin' || user.role === 'teacher') ? (
             <Link 
-              to="/teacher/dashboard" 
+              to="/teacher/manage-tests" 
               className="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors duration-200"
             >
               <div className="flex items-center">

@@ -1,5 +1,5 @@
-import { useLocation, Navigate, Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useLocation, Navigate, Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import { usePageTitle } from '../hooks/usePageTitle';
 
 function ResultsPage() {
@@ -7,12 +7,18 @@ function ResultsPage() {
   usePageTitle("Test Results");
 
   const location = useLocation();
+  const navigate = useNavigate();
+  const fromTest = location.state?.fromTest;
   const results = location.state?.results;
   const [showAnswers, setShowAnswers] = useState(false);
 
   if (!results) {
     return <Navigate to="/" replace />;
   }
+
+  useEffect(() => {
+    sessionStorage.removeItem('justFinishedAttempt');
+  }, []);
 
   const getAnswerStyle = (question, optionIndex) => {
     const isCorrect = optionIndex === question.correctAnswer;

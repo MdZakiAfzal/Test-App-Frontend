@@ -9,6 +9,7 @@ function InstructionsPage() {
   const navigate = useNavigate();
   const [test, setTest] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [attempted, setAttempted] = useState(false);
   const [error, setError] = useState('');
 
   usePageTitle("Test Instructions");
@@ -24,7 +25,20 @@ function InstructionsPage() {
         setLoading(false);
       }
     };
+    const checkIfAttempted = async () => {
+      try {
+        const res = await apiClient.get(`/attempts/check/${testId}`);
+        // res.data.data = { attempted: boolean, lastAttempt?: { ... } }
+        setAttempted(Boolean(res.data?.data?.attempted));
+        // optional: save last attempt if you want to show lastAttempt time/score
+        // setLastAttempt(res.data.data.lastAttempt ?? null);
+      } catch (err) {
+        console.warn('Could not check attempt status', err?.response?.status || err);
+        setAttempted(false);
+      }
+    };
     fetchTestDetails();
+    checkIfAttempted();
   }, [testId]);
 
   const handleStartTest = () => {
@@ -209,6 +223,15 @@ function InstructionsPage() {
                     The test will be submitted <strong>automatically</strong> when the time runs out.
                   </p>
                 </div>
+
+                <div className="flex items-start">
+                  {/*<div className="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center mr-3 sm:mr-4 mt-1 flex-shrink-0">
+                    <span className="text-gray-700 text-xs sm:text-sm font-bold">Note:</span>
+                  </div>*/}
+                  <p className="text-gray-700 text-base sm:text-lg">
+                    <strong>Note: </strong> appreaing for re-test, would <strong>delete the previous attempt</strong>, which cannot be recovered.
+                  </p>
+                </div>
               </div>
             </div>
 
@@ -224,16 +247,29 @@ function InstructionsPage() {
                 Back to Dashboard
               </button>
               
-              <button
-                onClick={handleStartTest}
-                className="w-full sm:w-auto flex items-center justify-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl transition-colors duration-200 shadow-lg hover:shadow-xl"
-              >
-                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                Proceed to Test
-              </button>
+              {attempted ? (
+                <button
+                  onClick={handleStartTest}
+                  className="w-full sm:w-auto flex items-center justify-center px-6 py-3 bg-amber-500 hover:bg-orange-400 text-white font-medium rounded-xl transition-colors duration-200 shadow-lg hover:shadow-xl"
+                >
+                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Retake Test
+                </button>
+              ):(
+                <button
+                  onClick={handleStartTest}
+                  className="w-full sm:w-auto flex items-center justify-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl transition-colors duration-200 shadow-lg hover:shadow-xl"
+                >
+                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Proceed to Test
+                </button>
+              )}
             </div>
 
             {/* Important Note */}
